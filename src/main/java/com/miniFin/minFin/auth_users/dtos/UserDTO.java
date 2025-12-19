@@ -33,10 +33,10 @@ public class UserDTO {
 
     @JsonIgnore
     private String password;
+    private List<Role> roles;
 
     private String profilePictureUrl;
     private boolean active;
-    private List<Role> roles;
     @JsonManagedReference
     private List<AccountDTO> accounts;
     private LocalDateTime createdAt;
