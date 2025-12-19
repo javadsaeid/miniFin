@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long Id;
+    private Long id;
 
     @Column(unique = true, nullable = false)
     @NotBlank(message = "Role name is required")
