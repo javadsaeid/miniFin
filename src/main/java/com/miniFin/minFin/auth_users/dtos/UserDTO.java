@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.miniFin.minFin.account.dtos.AccountDTO;
+import com.miniFin.minFin.notification.dtos.NotificationDTO;
+import com.miniFin.minFin.notification.entity.Notification;
 import com.miniFin.minFin.role.entity.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;

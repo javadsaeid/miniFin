@@ -1,11 +1,13 @@
 package com.miniFin.minFin.auth_users.entity;
 
 import com.miniFin.minFin.account.entity.Account;
+import com.miniFin.minFin.notification.entity.Notification;
 import com.miniFin.minFin.role.entity.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -17,6 +19,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "users")
+@Builder
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -55,6 +58,9 @@ public class User {
 
     @OneToMany(mappedBy = "user",  cascade = CascadeType.ALL)
     private List<Account> accounts;
+
+    @OneToMany(mappedBy = "user",  cascade = CascadeType.ALL)
+    private List<Notification> notifications;
 
     @Column
     private LocalDateTime createdAt = LocalDateTime.now();
