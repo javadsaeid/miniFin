@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome</title>
+    <style>
+        .container {
+            max-width: 600px;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 25px;
+            background: aliceblue;
+            border-radius: 8px;
+        }
+        .footer {
+            margin-top: 30px;
+            font-size: 13px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Welcome, <span th:text="${name}">Customer</span>!</h2>
+        <p>We are exited to have you on board at <b>miniFin</b>.</p>
+        <p>Start enjoying seamless deposits, withdraw, transfer and monthly statements.</p>
+
+        <div class="footer">@MINIFIN | Your Trusted Partner.</div>
+    </div>
+</body>
+</html>
