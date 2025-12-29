@@ -84,7 +84,6 @@ public class AuthServiceImpl implements AuthService {
                 .active(true)
                 .build();
 
-        // todo: auto generate an account number for ther user
         Account savedAccount = accountService.createAccount(AccountType.SAVING, user);
 
         //send welcome email of the user nad account details to the users email
@@ -150,7 +149,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public Response<?> forgetPassword(String email) {
-        User user  = userRepo.findByEmail(email)
+        User user = userRepo.findByEmail(email)
                 .orElseThrow(() -> new NotFoundException("User not found"));
 
         passwordResetRepo.deleteByUserId(user.getId());
@@ -184,7 +183,6 @@ public class AuthServiceImpl implements AuthService {
                 .message("Your password has been reset")
                 .build();
     }
-
 
 
     @Override
