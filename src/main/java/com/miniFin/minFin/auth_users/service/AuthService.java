@@ -11,5 +11,5 @@ public interface AuthService {
     Response<String> register(RegistrationRequest registrationRequest);
     Response<LoginResponse> login(LoginRequest loginRequest);
     Response<?> forgetPassword(String email);
-    Response<?> updatePassword(ResetPasswordRequest resetPasswordRequest);
+    Response<?> updatePasswordViaResetCode(ResetPasswordRequest resetPasswordRequest);
 }
