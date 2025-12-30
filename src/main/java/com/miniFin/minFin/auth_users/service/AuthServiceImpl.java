@@ -80,10 +80,12 @@ public class AuthServiceImpl implements AuthService {
                 .lastName(registrationRequest.getLastName())
                 .phoneNumber(registrationRequest.getPhoneNumber())
                 .password(passwordEncoder.encode(registrationRequest.getPassword()))
+                .email(registrationRequest.getEmail())
                 .roles(roles)
                 .active(true)
                 .build();
 
+        userRepo.save(user);
         Account savedAccount = accountService.createAccount(AccountType.SAVING, user);
 
         //send welcome email of the user nad account details to the users email
