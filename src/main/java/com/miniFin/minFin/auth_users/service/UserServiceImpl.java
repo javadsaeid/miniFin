@@ -40,7 +40,7 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final ModelMapper modelMapper;
 
-    private final String uploadDir="/upload/profile-pictures/";
+    private final String uploadDir="./upload/profile-pictures/";
 
     @Override
     public User gerCurrentLoggedInUser() {
@@ -106,7 +106,7 @@ public class UserServiceImpl implements UserService {
         NotificationDTO notificationDTO = NotificationDTO.builder()
                 .recipient(user.getEmail())
                 .subject("Your Password Was Successfully Changed.")
-                .templateName("password-change")
+                .templateName("password-changed")
                 .templateVariables(vars)
                 .build();
 
