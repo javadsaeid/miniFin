@@ -3,7 +3,6 @@ package com.miniFin.minFin.transaction.controller;
 import com.miniFin.minFin.res.Response;
 import com.miniFin.minFin.transaction.dtos.TransactionDTO;
 import com.miniFin.minFin.transaction.dtos.TransactionRequest;
-import com.miniFin.minFin.transaction.entity.Transaction;
 import com.miniFin.minFin.transaction.service.TransactionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
