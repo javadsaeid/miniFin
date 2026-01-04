@@ -138,7 +138,7 @@ public class TransactionServiceImpl implements TransactionService {
             subject = "Debit Alert";
             handleSendEmail(user, subject, template, templateVars);
         } else if (transaction.getTransactionType() == TransactionType.TRANSFER) {
-            template = "transfer-alert";
+            template = "debit-alert";
             subject = "Transfer Alert";
             handleSendEmail(user, subject, template, templateVars);
 
