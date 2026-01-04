@@ -1,6 +1,7 @@
 package com.miniFin.minFin.account.entity;
 
 import com.miniFin.minFin.auth_users.entity.User;
+import com.miniFin.minFin.enums.AccountStatus;
 import com.miniFin.minFin.enums.AccountType;
 import com.miniFin.minFin.enums.Currency;
 import com.miniFin.minFin.transaction.entity.Transaction;
@@ -11,6 +12,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -34,6 +36,10 @@ public class Account {
     @Column(nullable = false)
     private AccountType accountType;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private AccountStatus accountStatus;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
@@ -41,6 +47,9 @@ public class Account {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Currency currency;
+
+    @Column(nullable = false)
+    private LocalDateTime closedAt;
 
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Transaction> transactions;
