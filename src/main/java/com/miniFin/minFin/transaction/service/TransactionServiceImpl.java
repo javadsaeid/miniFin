@@ -96,7 +96,8 @@ public class TransactionServiceImpl implements TransactionService {
                         Map.of(
                                 "currentPage", transactions.getNumber(),
                                 "totalItem", transactions.getTotalElements(),
-                                "totalPages", transactions.getTotalPages()
+                                "totalPages", transactions.getTotalPages(),
+                                "pageSize", transactions.getSize()
                         )
                 )
                 .build();
