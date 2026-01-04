@@ -31,7 +31,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public Response<List<TransactionDTO>> getTransactionsForAnAccount(String account, int page, int size) {
+    public Response<List<TransactionDTO>> getTransactionsForMyAccount(String account, int page, int size) {
         return null;
     }
 }
