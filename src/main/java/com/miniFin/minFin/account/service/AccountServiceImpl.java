@@ -39,6 +39,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public Account createAccount(AccountType accountType, User user) {
+        log.info("Creating account {}", accountType);
         // generate account number
         String AccountNumber = generateAccountNumber();
 
@@ -97,6 +98,7 @@ public class AccountServiceImpl implements AccountService {
             accountNumber = "66" + (random.nextInt(90000000) + 10000000);
         } while (accountRepo.findByAccountNumber(accountNumber).isPresent());
 
+        log.info("Generated account number {}", accountNumber);
         return accountNumber;
     }
 
