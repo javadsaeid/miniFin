@@ -48,7 +48,7 @@ public class Account {
     @Column(nullable = false)
     private Currency currency;
 
-    @Column(nullable = false)
+    @Column
     private LocalDateTime closedAt;
 
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
