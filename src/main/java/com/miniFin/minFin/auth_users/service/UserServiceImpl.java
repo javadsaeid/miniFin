@@ -43,7 +43,7 @@ public class UserServiceImpl implements UserService {
     private final String uploadDir="./upload/profile-pictures/";
 
     @Override
-    public User gerCurrentLoggedInUser() {
+    public User getCurrentLoggedInUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null) {
             throw new NotFoundException("User is not authenticated");
@@ -58,7 +58,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Response<UserDTO> getMyProfile() {
-        User user = gerCurrentLoggedInUser();
+        User user = getCurrentLoggedInUser();
         UserDTO userDTO = modelMapper.map(user, UserDTO.class);
 
         return Response.<UserDTO>builder()
@@ -82,7 +82,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Response<?> updatePassword(UpdatePasswordRequest updatePasswordRequest) {
-        User user = gerCurrentLoggedInUser();
+        User user = getCurrentLoggedInUser();
 
         String newPassword = updatePasswordRequest.getNewPassword();
         String oldPassword = updatePasswordRequest.getOldPassword();
@@ -120,7 +120,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Response<?> updateProfilePicture(MultipartFile file) {
-        User user = gerCurrentLoggedInUser();
+        User user = getCurrentLoggedInUser();
 
         try {
             Path path = Paths.get(uploadDir);
