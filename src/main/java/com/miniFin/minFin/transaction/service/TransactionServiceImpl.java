@@ -20,6 +20,7 @@ import com.miniFin.minFin.transaction.repo.TransactionRepo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -28,6 +29,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -81,13 +83,24 @@ public class TransactionServiceImpl implements TransactionService {
         }
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("transactionDateTime").descending());
+        Page<Transaction> transactions = transactionRepo.findByAccount_AccountNumber(accountNumber, pageable);
+        List<TransactionDTO> transactionDTOS = transactions
+                .getContent()
+                .stream()
+                .map(transaction -> modelMapper.map(transaction, TransactionDTO.class)).toList();
+
 
         return Response.<List<TransactionDTO>>builder()
-                .data(transactionRepo.findByAccount_AccountNumber(accountNumber, pageable)
-                        .stream()
-                        .map(transaction -> modelMapper.map(transaction, TransactionDTO.class)).toList())
+                .data(transactionDTOS)
                 .statusCode(HttpStatus.OK.value())
                 .message("Transaction List retrieved")
+                .metaData(
+                        Map.of(
+                                "currentPage", transactions.getNumber(),
+                                "totalItem", transactions.getTotalElements(),
+                                "totalPages", transactions.getTotalPages()
+                        )
+                )
                 .build();
     }
 
