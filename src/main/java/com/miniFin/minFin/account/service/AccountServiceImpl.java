@@ -89,6 +89,8 @@ public class AccountServiceImpl implements AccountService {
         accountRepo.save(account);
 
         return Response.builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("account closed")
                 .build();
     }
 
