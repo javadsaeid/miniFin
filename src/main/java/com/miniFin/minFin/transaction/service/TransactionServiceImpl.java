@@ -6,6 +6,7 @@ import com.miniFin.minFin.auth_users.entity.User;
 import com.miniFin.minFin.auth_users.service.UserService;
 import com.miniFin.minFin.enums.TransactionType;
 import com.miniFin.minFin.enums.TransactionalStatus;
+import com.miniFin.minFin.exceptions.BadRequestException;
 import com.miniFin.minFin.exceptions.InsufficientBalanceException;
 import com.miniFin.minFin.exceptions.InvalidTransactionException;
 import com.miniFin.minFin.exceptions.NotFoundException;
@@ -19,7 +20,11 @@ import com.miniFin.minFin.transaction.repo.TransactionRepo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -66,8 +71,24 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public Response<List<TransactionDTO>> getTransactionsForMyAccount(String account, int page, int size) {
-        return null;
+    public Response<List<TransactionDTO>> getTransactionsForMyAccount(String accountNumber, int page, int size) {
+        User user = userService.getCurrentLoggedInUser();
+        Account myAccount = accountRepo.findByAccountNumber(accountNumber)
+                .orElseThrow(() -> new NotFoundException("Account not found"));
+
+        if (!myAccount.getUser().getId().equals(user.getId())) {
+            throw new BadRequestException("Account not to the authenticated user");
+        }
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("transactionDateTime").descending());
+
+        return Response.<List<TransactionDTO>>builder()
+                .data(transactionRepo.findByAccount_AccountNumber(accountNumber, pageable)
+                        .stream()
+                        .map(transaction -> modelMapper.map(transaction, TransactionDTO.class)).toList())
+                .statusCode(HttpStatus.OK.value())
+                .message("Transaction List retrieved")
+                .build();
     }
 
     private void handleDeposit(TransactionRequest transactionRequest, Transaction transaction) {
