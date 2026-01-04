@@ -45,6 +45,8 @@ public class Transaction {
     private Account account;
 
     // for transfer
+    @Column
     private String sourceAccount;
+    @Column
     private String destinationAccount;
 }
