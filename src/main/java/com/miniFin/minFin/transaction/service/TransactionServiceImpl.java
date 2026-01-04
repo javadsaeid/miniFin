@@ -25,11 +25,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,9 +52,9 @@ public class TransactionServiceImpl implements TransactionService {
         transaction.setDescription(transactionRequest.getDescription());
 
         switch (transaction.getTransactionType()) {
-            case DEPOSIT -> handleDeposit(transactionRequest,transaction);
+            case DEPOSIT -> handleDeposit(transactionRequest, transaction);
             case WITHDRAW -> handleWithdraw(transactionRequest, transaction);
-            case TRANSFER -> handleTransfer(transactionRequest,transaction);
+            case TRANSFER -> handleTransfer(transactionRequest, transaction);
             default -> throw new InvalidTransactionException("Invalid transaction type");
         }
 
