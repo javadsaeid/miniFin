@@ -21,7 +21,7 @@ import java.nio.charset.StandardCharsets;
 @Service
 @Slf4j
 @AllArgsConstructor
-public class NotificationServiceImple implements NotificationService {
+public class NotificationServiceImpl implements NotificationService {
     private final NotificationRepo notificationRepo;
     private final JavaMailSender mailSender;
     private final TemplateEngine templateEngine;
