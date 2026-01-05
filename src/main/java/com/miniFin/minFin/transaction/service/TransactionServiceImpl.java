@@ -109,7 +109,6 @@ public class TransactionServiceImpl implements TransactionService {
 
         account.setBalance(account.getBalance().add(transactionRequest.getAmount()));
         transaction.setAccount(account);
-        transactionRepo.save(transaction);
     }
 
     private void handleWithdraw(TransactionRequest transactionRequest, Transaction transaction) {
@@ -122,7 +121,6 @@ public class TransactionServiceImpl implements TransactionService {
 
         account.setBalance(account.getBalance().subtract(transaction.getAmount()));
         transaction.setAccount(account);
-        transactionRepo.save(transaction);
     }
 
     private void handleTransfer(TransactionRequest transactionRequest, Transaction transaction) {
@@ -147,7 +145,6 @@ public class TransactionServiceImpl implements TransactionService {
         transaction.setAccount(destAccount);
         transaction.setSourceAccount(account.getAccountNumber());
         transaction.setDestinationAccount(destAccount.getAccountNumber());
-        transactionRepo.save(transaction);
     }
 
     private void sendTransactionNotification(Transaction transaction) {
