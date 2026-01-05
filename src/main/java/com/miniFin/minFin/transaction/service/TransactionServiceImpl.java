@@ -146,7 +146,7 @@ public class TransactionServiceImpl implements TransactionService {
 
         transaction.setAccount(destAccount);
         transaction.setSourceAccount(account.getAccountNumber());
-        transaction.setDestinationAccount(account.getAccountNumber());
+        transaction.setDestinationAccount(destAccount.getAccountNumber());
         transactionRepo.save(transaction);
     }
 
