@@ -65,7 +65,7 @@ public class AuthServiceImpl implements AuthService {
         } else {
             roles = registrationRequest.getRoles()
                     .stream()
-                    .map(roleName -> roleRepo.findByName(roleName.getName())
+                    .map(roleName -> roleRepo.findByName(roleName)
                             .orElseThrow(() -> new NotFoundException("Role not found"))
                     )
                     .toList();

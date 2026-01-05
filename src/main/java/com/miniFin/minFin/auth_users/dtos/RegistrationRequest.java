@@ -19,5 +19,5 @@ public class RegistrationRequest {
 
     @NotBlank(message = "Password is required")
     private String password;
-    private List<Role> roles;
+    private List<String> roles;
 }
