@@ -32,33 +32,51 @@ public class AuditController {
     @GetMapping("/users")
     public ResponseEntity<UserDTO> getUsers(@RequestParam String email) {
         Optional<UserDTO> userDTO = auditService.findUserByEmail(email);
-        // different approach to handle not found user.
         return userDTO.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
     @GetMapping("/accounts")
     public ResponseEntity<AccountDTO> getAccounts(@RequestParam String accountNumber) {
         Optional<AccountDTO> accountDTO = auditService.findAccountByAccountNumber(accountNumber);
-        // different approach to handle not found user.
         return accountDTO.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
     @GetMapping("/transactions/by-accountNumber")
     public ResponseEntity<List<TransactionDTO>> getTransactionsByAccountNumber(@RequestParam String accountNumber) {
         List<TransactionDTO> transactionDTOS = auditService.findTransactionByAccountNumber(accountNumber);
-
         if (transactionDTOS.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-
         return ResponseEntity.ok(transactionDTOS);
     }
 
     @GetMapping("/transactions/by-id")
     public ResponseEntity<TransactionDTO> getTransactionsById(@RequestParam Long id) {
         Optional<TransactionDTO> transactionDTOS = auditService.findTransactionById(id);
-        // different approach to handle not found user.
         return transactionDTOS.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
+    @GetMapping("/all-users")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<List<UserDTO>> getAllUsers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "50") int size) {
+        return ResponseEntity.ok(auditService.getAllUsers(page, size));
+    }
+
+    @GetMapping("/all-accounts")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<List<AccountDTO>> getAllAccounts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "50") int size) {
+        return ResponseEntity.ok(auditService.getAllAccounts(page, size));
+    }
+
+    @GetMapping("/all-transactions")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<List<TransactionDTO>> getAllTransactions(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "50") int size) {
+        return ResponseEntity.ok(auditService.getAllTransactions(page, size));
+    }
 }

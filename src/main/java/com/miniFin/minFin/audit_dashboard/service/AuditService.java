@@ -14,4 +14,7 @@ public interface AuditService {
     Optional<AccountDTO> findAccountByAccountNumber(String accountNumber);
     List<TransactionDTO> findTransactionByAccountNumber(String accountNumber);
     Optional<TransactionDTO> findTransactionById(Long transactionId);
+    List<UserDTO> getAllUsers(int page, int size);
+    List<AccountDTO> getAllAccounts(int page, int size);
+    List<TransactionDTO> getAllTransactions(int page, int size);
 }

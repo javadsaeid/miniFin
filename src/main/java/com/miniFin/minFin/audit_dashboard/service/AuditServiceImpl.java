@@ -8,6 +8,8 @@ import com.miniFin.minFin.transaction.dtos.TransactionDTO;
 import com.miniFin.minFin.transaction.repo.TransactionRepo;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -56,5 +58,29 @@ public class AuditServiceImpl implements AuditService {
     @Override
     public Optional<TransactionDTO> findTransactionById(Long transactionId) {
         return transactionRepo.findById(transactionId).map(u -> modelMapper.map(u, TransactionDTO.class));
+    }
+
+    @Override
+    public List<UserDTO> getAllUsers(int page, int size) {
+        return userRepo.findAll(PageRequest.of(page, size, Sort.by("id").descending()))
+                .getContent().stream()
+                .map(u -> modelMapper.map(u, UserDTO.class))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<AccountDTO> getAllAccounts(int page, int size) {
+        return accountRepo.findAll(PageRequest.of(page, size, Sort.by("id").descending()))
+                .getContent().stream()
+                .map(a -> modelMapper.map(a, AccountDTO.class))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<TransactionDTO> getAllTransactions(int page, int size) {
+        return transactionRepo.findAll(PageRequest.of(page, size, Sort.by("id").descending()))
+                .getContent().stream()
+                .map(t -> modelMapper.map(t, TransactionDTO.class))
+                .collect(Collectors.toList());
     }
 }
