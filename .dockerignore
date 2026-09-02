@@ -1,0 +1,17 @@
+**/.git
+**/.github
+**/node_modules
+**/.next
+**/out
+**/screenshots
+**/.env
+**/.idea
+**/.vscode
+**/docker/certs
+**/*.md
+**/docker-compose*.yml
+**/src/front-end-next
+**/src/front-end
+**/.mvn
+**/mvnw
+**/mvnw.cmd

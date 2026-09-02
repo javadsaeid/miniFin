@@ -1,0 +1,197 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  JAVA_VERSION: "21"
+  NODE_VERSION: "20"
+
+jobs:
+  backend-build:
+    name: Backend Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: temurin
+          cache: maven
+
+      - name: Build with Maven
+        run: ./mvnw compile -B
+
+      - name: Package JAR
+        run: ./mvnw package -DskipTests -B
+
+      - name: Upload JAR artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-jar
+          path: target/minFin-0.0.1-SNAPSHOT.jar
+          retention-days: 1
+
+  frontend-build:
+    name: Frontend Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: src/front-end-next/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: src/front-end-next
+
+      - name: Lint
+        run: npm run lint
+        working-directory: src/front-end-next
+
+      - name: Build
+        run: npm run build
+        working-directory: src/front-end-next
+
+  docker-build:
+    name: Docker Build
+    runs-on: ubuntu-latest
+    needs: [backend-build, frontend-build]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download JAR artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: backend-jar
+          path: target/
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build backend image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: false
+          tags: minifin-backend:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build frontend image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./src/front-end-next
+          push: false
+          tags: minifin-frontend:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  smoke-test:
+    name: Smoke Test
+    runs-on: ubuntu-latest
+    needs: docker-build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download JAR artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: backend-jar
+          path: target/
+
+      - name: Generate TLS certs
+        run: bash scripts/generate-certs.sh
+
+      - name: Build images locally
+        run: |
+          docker build -t minifin-backend:ci .
+          docker build -t minifin-frontend:ci ./src/front-end-next
+
+      - name: Create CI docker-compose
+        run: |
+          cat > docker-compose.ci.yml << 'EOF'
+          services:
+            mysql:
+              image: mysql:8.0
+              environment:
+                MYSQL_ROOT_PASSWORD: secret
+                MYSQL_DATABASE: minifin
+              healthcheck:
+                test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+                interval: 10s
+                timeout: 5s
+                retries: 5
+            backend:
+              image: minifin-backend:ci
+              environment:
+                LOCAL_DB_URL: jdbc:mysql://mysql:3306/minifin
+                LOCAL_DB_USERNAME: root
+                LOCAL_DB_PASSWORD: secret
+                JWT_SECRET: ci-test-secret
+                JWT_EXPIRATION_TIME: "86400000"
+              depends_on:
+                mysql:
+                  condition: service_healthy
+            frontend:
+              image: minifin-frontend:ci
+            nginx:
+              image: nginx:alpine
+              ports:
+                - "8080:80"
+                - "8443:443"
+              volumes:
+                - ./docker/nginx.conf:/etc/nginx/nginx.conf:ro
+                - ./docker/certs:/etc/nginx/ssl:ro
+              depends_on:
+                - backend
+                - frontend
+          EOF
+
+      - name: Start services
+        run: docker compose -f docker-compose.ci.yml up -d
+
+      - name: Wait for backend
+        run: |
+          echo "Waiting for backend to be ready..."
+          for i in $(seq 1 30); do
+            if curl -sk https://localhost:8443/api/auth/login -o /dev/null -w "%{http_code}" 2>/dev/null | grep -q "40[0-9]"; then
+              echo "Backend is ready!"
+              exit 0
+            fi
+            echo "Attempt $i/30..."
+            sleep 2
+          done
+          echo "Backend failed to start"
+          docker compose -f docker-compose.ci.yml logs backend
+          exit 1
+
+      - name: Verify frontend
+        run: |
+          HTTP_CODE=$(curl -sk -o /dev/null -w "%{http_code}" https://localhost:8443/)
+          if [ "$HTTP_CODE" = "200" ]; then
+            echo "Frontend is serving (HTTP $HTTP_CODE)"
+          else
+            echo "Frontend check failed (HTTP $HTTP_CODE)"
+            exit 1
+          fi
+
+      - name: Verify API login
+        run: |
+          RESPONSE=$(curl -sk -X POST https://localhost:8443/api/auth/login \
+            -H "Content-Type: application/json" \
+            -d '{"email":"admin@minifin.com","password":"admin123"}')
+          echo "$RESPONSE" | python3 -c "import sys,json; d=json.load(sys.stdin); assert d.get('data',{}).get('token'), 'No token in response'; print('Login OK')"
