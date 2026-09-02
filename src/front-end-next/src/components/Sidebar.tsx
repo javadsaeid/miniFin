@@ -14,6 +14,7 @@ import {
   SettingOutlined,
   LogoutOutlined,
   AuditOutlined,
+  GlobalOutlined,
 } from "@ant-design/icons";
 import {
   isAuthenticated,
@@ -23,6 +24,7 @@ import {
   getToken,
 } from "@/lib/auth";
 import { apiService } from "@/services/api";
+import { useTranslation, Locale } from "@/i18n/context";
 
 const ADMIN_EMAILS = ["admin@minifin.com"];
 
@@ -45,6 +47,7 @@ function parseJwt(token: string): any {
 export default function Sidebar() {
   const router = useRouter();
   const pathname = usePathname();
+  const { t, locale, setLocale } = useTranslation();
   const [auth, setAuth] = useState(false);
   const [admin, setAdmin] = useState(false);
   const [auditor, setAuditor] = useState(false);
@@ -80,10 +83,10 @@ export default function Sidebar() {
                 }
               })
               .catch(() => {});
-        }
           }
         }
       }
+    }
   }, [pathname]);
 
   const handleLogout = () => setShowModal(true);
@@ -91,33 +94,37 @@ export default function Sidebar() {
   const confirmLogout = () => {
     logout();
     setShowModal(false);
-    message.success("Logged out successfully");
+    message.success(locale === "fa" ? "با موفقیت خارج شدید" : "Logged out successfully");
     router.push("/login");
   };
 
+  const toggleLocale = () => {
+    setLocale(locale === "en" ? "fa" : "en");
+  };
+
   const navItems = [
-    { key: "/", icon: <HomeOutlined />, label: "Home" },
+    { key: "/", icon: <HomeOutlined />, label: t("nav.home") },
     ...(auth
       ? [
-          { key: "/profile", icon: <UserOutlined />, label: "Profile" },
-          { key: "/transfer", icon: <SwapOutlined />, label: "Transfer" },
-          { key: "/transactions", icon: <HistoryOutlined />, label: "Transactions" },
+          { key: "/profile", icon: <UserOutlined />, label: t("nav.profile") },
+          { key: "/transfer", icon: <SwapOutlined />, label: t("nav.transfer") },
+          { key: "/transactions", icon: <HistoryOutlined />, label: t("nav.transactions") },
         ]
       : []),
     ...(admin || auditor
       ? [
-          { key: "/deposit", icon: <DollarOutlined />, label: "Deposit" },
-          { key: "/auditor-dashboard", icon: <DashboardOutlined />, label: "Auditor" },
+          { key: "/deposit", icon: <DollarOutlined />, label: t("nav.deposit") },
+          { key: "/auditor-dashboard", icon: <DashboardOutlined />, label: t("nav.auditor") },
         ]
       : []),
     ...(admin
-      ? [{ key: "/admin", icon: <SettingOutlined />, label: "Admin Panel" }]
+      ? [{ key: "/admin", icon: <SettingOutlined />, label: t("nav.admin") }]
       : []),
   ];
 
   const guestItems = [
-    { key: "/login", icon: <AuditOutlined />, label: "Login" },
-    { key: "/register", icon: <UserOutlined />, label: "Register" },
+    { key: "/login", icon: <AuditOutlined />, label: t("nav.login") },
+    { key: "/register", icon: <UserOutlined />, label: t("nav.register") },
   ];
 
   const items = auth ? navItems : guestItems;
@@ -131,7 +138,7 @@ export default function Sidebar() {
         </div>
 
         <nav className="sidebar-nav">
-          <div className="sidebar-nav-section">Navigation</div>
+          <div className="sidebar-nav-section">{t("nav.navigation")}</div>
           {items.map((item) => (
             <Link
               key={item.key}
@@ -144,44 +151,52 @@ export default function Sidebar() {
           ))}
         </nav>
 
-        {auth && (
-          <div className="sidebar-footer">
+        <div className="sidebar-footer">
+          {auth && (
             <div className="sidebar-user">
               <div className="sidebar-user-avatar">
                 {userName ? userName.charAt(0).toUpperCase() : "U"}
               </div>
               <div className="sidebar-user-info">
                 <div className="sidebar-user-name">
-                  {userName || "User"}
+                  {userName || (locale === "fa" ? "کاربر" : "User")}
                 </div>
                 <div className="sidebar-user-role">
-                  {userRole || "User"}
+                  {userRole || (locale === "fa" ? "کاربر" : "User")}
                 </div>
               </div>
             </div>
+          )}
+
+          <button className="lang-switch" onClick={toggleLocale}>
+            <GlobalOutlined className="lang-switch-icon" />
+            <span>{locale === "en" ? "فارسی" : "English"}</span>
+          </button>
+
+          {auth && (
             <button className="sidebar-nav-item" onClick={handleLogout} style={{ marginTop: 8 }}>
               <span className="nav-icon"><LogoutOutlined /></span>
-              <span>Logout</span>
+              <span>{t("nav.logout")}</span>
             </button>
-          </div>
-        )}
+          )}
+        </div>
       </aside>
 
       <Modal
-        title="Confirm Logout"
+        title={t("common.confirmLogout")}
         open={showModal}
         onOk={confirmLogout}
         onCancel={() => setShowModal(false)}
         footer={[
           <Button key="cancel" onClick={() => setShowModal(false)}>
-            Cancel
+            {t("common.cancel")}
           </Button>,
           <Button key="confirm" type="primary" danger onClick={confirmLogout}>
-            Logout
+            {t("common.logoutBtn")}
           </Button>,
         ]}
       >
-        <p>Are you sure you want to logout?</p>
+        <p>{t("common.logoutMessage")}</p>
       </Modal>
     </>
   );

@@ -1,24 +1,26 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Form, Input, Button, Typography, message } from "antd";
 import { MailOutlined, LockOutlined, SafetyCertificateOutlined, UserOutlined, AuditOutlined } from "@ant-design/icons";
 import { apiService } from "@/services/api";
 import { saveAuthData } from "@/lib/auth";
+import { useTranslation } from "@/i18n/context";
 
 const { Text } = Typography;
 
-const demoAccounts = [
-  { label: "Admin", email: "admin@minifin.com", password: "admin123", icon: <SafetyCertificateOutlined />, className: "admin", desc: "Full access" },
-  { label: "Customer", email: "customer@minifin.com", password: "customer123", icon: <UserOutlined />, className: "customer", desc: "Standard access" },
-  { label: "Auditor", email: "auditor@minifin.com", password: "auditor123", icon: <AuditOutlined />, className: "auditor", desc: "Read-only access" },
-];
-
 export default function LoginContent() {
   const router = useRouter();
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
+
+  const demoAccounts = [
+    { label: "Admin", email: "admin@minifin.com", password: "admin123", icon: <SafetyCertificateOutlined />, className: "admin", desc: t("auth.fullAccess") },
+    { label: "Customer", email: "customer@minifin.com", password: "customer123", icon: <UserOutlined />, className: "customer", desc: t("auth.standardAccess") },
+    { label: "Auditor", email: "auditor@minifin.com", password: "auditor123", icon: <AuditOutlined />, className: "auditor", desc: t("auth.readOnlyAccess") },
+  ];
 
   const doLogin = async (email: string, password: string) => {
     setLoading(true);
@@ -26,7 +28,7 @@ export default function LoginContent() {
       const res = await apiService.login({ email, password });
       const { token, roles } = res.data.data;
       saveAuthData(token, roles);
-      message.success("Welcome back!");
+      message.success(t("auth.welcomeBack"));
       router.push("/");
     } catch (err: any) {
       message.error(err.response?.data?.message || "Login failed");
@@ -41,46 +43,46 @@ export default function LoginContent() {
 
   return (
     <div className="auth-form-container">
-      <div className="auth-form-title">Welcome back</div>
-      <div className="auth-form-subtitle">Sign in to your account to continue</div>
+      <div className="auth-form-title">{t("auth.welcomeBack")}</div>
+      <div className="auth-form-subtitle">{t("auth.signInSubtitle")}</div>
 
       <Form layout="vertical" onFinish={onFinish} size="large">
         <Form.Item
           name="email"
           rules={[
-            { required: true, message: "Email required" },
+            { required: true, message: t("auth.required") },
             { type: "email", message: "Invalid email" },
           ]}
         >
-          <Input prefix={<MailOutlined />} placeholder="Email address" />
+          <Input prefix={<MailOutlined />} placeholder={t("auth.email")} />
         </Form.Item>
         <Form.Item
           name="password"
-          rules={[{ required: true, message: "Password required" }]}
+          rules={[{ required: true, message: t("auth.required") }]}
         >
-          <Input.Password prefix={<LockOutlined />} placeholder="Password" />
+          <Input.Password prefix={<LockOutlined />} placeholder={t("auth.password")} />
         </Form.Item>
         <Form.Item style={{ marginBottom: 12 }}>
           <Button type="primary" htmlType="submit" block loading={loading} size="large">
-            Sign In
+            {t("auth.signIn")}
           </Button>
         </Form.Item>
       </Form>
 
       <div style={{ textAlign: "center", marginBottom: 24 }}>
         <Link href="/forgot-password" style={{ color: "#6366f1", fontSize: 13 }}>
-          Forgot password?
+          {t("auth.forgotPassword")}
         </Link>
         <div style={{ marginTop: 8, fontSize: 13, color: "#6b7280" }}>
-          Don&apos;t have an account?{" "}
+          {t("auth.dontHaveAccount")}{" "}
           <Link href="/register" style={{ color: "#6366f1", fontWeight: 600 }}>
-            Sign up
+            {t("auth.signUp")}
           </Link>
         </div>
       </div>
 
       <div style={{ marginBottom: 12, fontSize: 12, color: "#9ca3af", textTransform: "uppercase", letterSpacing: 1, fontWeight: 600, textAlign: "center" }}>
-        Quick Demo
+        {t("auth.quickDemo")}
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
@@ -94,7 +96,7 @@ export default function LoginContent() {
               {acc.icon}
             </div>
             <div style={{ flex: 1 }}>
-              <div className="demo-card-label">Login as {acc.label}</div>
+              <div className="demo-card-label">{t("auth.loginAs", { role: acc.label })}</div>
               <div className="demo-card-email">{acc.email}</div>
             </div>
             <Text type="secondary" style={{ fontSize: 11 }}>{acc.desc}</Text>

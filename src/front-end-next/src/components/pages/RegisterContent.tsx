@@ -6,9 +6,11 @@ import Link from "next/link";
 import { Form, Input, Button, message } from "antd";
 import { UserOutlined, MailOutlined, LockOutlined, PhoneOutlined } from "@ant-design/icons";
 import { apiService } from "@/services/api";
+import { useTranslation } from "@/i18n/context";
 
 export default function RegisterContent() {
   const router = useRouter();
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
 
   const onFinish = async (values: {
@@ -21,7 +23,7 @@ export default function RegisterContent() {
     setLoading(true);
     try {
       await apiService.register(values);
-      message.success("Account created successfully");
+      message.success(t("auth.welcomeBack"));
       router.push("/login");
     } catch (err: any) {
       message.error(err.response?.data?.message || "Registration failed");
@@ -32,58 +34,58 @@ export default function RegisterContent() {
 
   return (
     <div className="auth-form-container">
-      <div className="auth-form-title">Create account</div>
-      <div className="auth-form-subtitle">Get started with your free account</div>
+      <div className="auth-form-title">{t("auth.createAccount")}</div>
+      <div className="auth-form-subtitle">{t("auth.signUpSubtitle")}</div>
 
       <Form layout="vertical" onFinish={onFinish} size="large">
         <div style={{ display: "flex", gap: 12 }}>
           <Form.Item
             name="firstName"
-            rules={[{ required: true, message: "Required" }]}
+            rules={[{ required: true, message: t("auth.required") }]}
             style={{ flex: 1 }}
           >
-            <Input prefix={<UserOutlined />} placeholder="First name" />
+            <Input prefix={<UserOutlined />} placeholder={t("auth.firstName")} />
           </Form.Item>
           <Form.Item
             name="lastName"
-            rules={[{ required: true, message: "Required" }]}
+            rules={[{ required: true, message: t("auth.required") }]}
             style={{ flex: 1 }}
           >
-            <Input prefix={<UserOutlined />} placeholder="Last name" />
+            <Input prefix={<UserOutlined />} placeholder={t("auth.lastName")} />
           </Form.Item>
         </div>
         <Form.Item
           name="email"
           rules={[
-            { required: true, message: "Email required" },
+            { required: true, message: t("auth.required") },
             { type: "email", message: "Invalid email" },
           ]}
         >
-          <Input prefix={<MailOutlined />} placeholder="Email address" />
+          <Input prefix={<MailOutlined />} placeholder={t("auth.email")} />
         </Form.Item>
         <Form.Item
           name="phoneNumber"
-          rules={[{ required: true, message: "Phone required" }]}
+          rules={[{ required: true, message: t("auth.required") }]}
         >
-          <Input prefix={<PhoneOutlined />} placeholder="Phone number" />
+          <Input prefix={<PhoneOutlined />} placeholder={t("auth.phoneNumber")} />
         </Form.Item>
         <Form.Item
           name="password"
-          rules={[{ required: true, message: "Password required" }]}
+          rules={[{ required: true, message: t("auth.required") }]}
         >
-          <Input.Password prefix={<LockOutlined />} placeholder="Password" />
+          <Input.Password prefix={<LockOutlined />} placeholder={t("auth.password")} />
         </Form.Item>
         <Form.Item style={{ marginBottom: 12 }}>
           <Button type="primary" htmlType="submit" block loading={loading} size="large">
-            Create Account
+            {t("auth.createAccount")}
           </Button>
         </Form.Item>
       </Form>
 
       <div style={{ textAlign: "center", fontSize: 13, color: "#6b7280" }}>
-        Already have an account?{" "}
+        {t("auth.alreadyHaveAccount")}{" "}
         <Link href="/login" style={{ color: "#6366f1", fontWeight: 600 }}>
-          Sign in
+          {t("auth.signIn")}
         </Link>
       </div>
     </div>

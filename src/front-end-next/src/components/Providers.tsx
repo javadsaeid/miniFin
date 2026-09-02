@@ -3,22 +3,25 @@
 import dynamic from "next/dynamic";
 import { ConfigProvider } from "antd";
 import { usePathname } from "next/navigation";
+import { I18nProvider, useTranslation } from "@/i18n/context";
 
 const Sidebar = dynamic(() => import("@/components/Sidebar"), { ssr: false });
 
 const AUTH_ROUTES = ["/login", "/register", "/forgot-password", "/reset-password"];
 
-export default function Providers({ children }: { children: React.ReactNode }) {
+function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const { dir } = useTranslation();
   const isAuthPage = AUTH_ROUTES.includes(pathname);
 
   return (
     <ConfigProvider
+      direction={dir}
       theme={{
         token: {
           colorPrimary: "#6366f1",
           borderRadius: 8,
-          fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+          fontFamily: "'Inter', 'Vazirmatn', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
           colorBgContainer: "#ffffff",
           colorBgLayout: "#f0f2f5",
           colorText: "#1f2937",
@@ -60,7 +63,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
             <div className="auth-left-content">
               <div className="auth-left-title">MiniFin</div>
               <div className="auth-left-subtitle">
-                Secure, modern banking at your fingertips.
+                <span dir="ltr">Secure, modern banking at your fingertips.</span>
               </div>
               <div className="auth-features">
                 <div className="auth-feature">
@@ -91,5 +94,13 @@ export default function Providers({ children }: { children: React.ReactNode }) {
         </div>
       )}
     </ConfigProvider>
+  );
+}
+
+export default function Providers({ children }: { children: React.ReactNode }) {
+  return (
+    <I18nProvider>
+      <AppLayout>{children}</AppLayout>
+    </I18nProvider>
   );
 }

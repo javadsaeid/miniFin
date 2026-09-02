@@ -623,3 +623,79 @@ body {
 .sidebar-nav::-webkit-scrollbar-thumb:hover {
   background: rgba(255,255,255,0.2);
 }
+
+/* ========== RTL SUPPORT ========== */
+[dir="rtl"] body {
+  font-family: 'Vazirmatn', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+[dir="rtl"] .app-main {
+  margin-left: 0;
+  margin-right: var(--sidebar-width);
+}
+
+[dir="rtl"] .app-sidebar {
+  left: auto;
+  right: 0;
+}
+
+[dir="rtl"] .sidebar-nav-item {
+  text-align: right;
+}
+
+[dir="rtl"] .auth-layout {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .auth-features {
+  text-align: right;
+}
+
+[dir="rtl"] .auth-form-container {
+  direction: rtl;
+}
+
+[dir="rtl"] .page-header h1 {
+  letter-spacing: 0;
+}
+
+@media (max-width: 768px) {
+  [dir="rtl"] .app-main {
+    margin-left: 0;
+    margin-right: var(--sidebar-collapsed-width);
+  }
+}
+
+/* ========== FADED TEXT ========== */
+.faded-text {
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+/* ========== LANGUAGE SWITCHER ========== */
+.lang-switch {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition);
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.04);
+  color: rgba(255,255,255,0.6);
+  font-size: 13px;
+  font-weight: 500;
+  width: 100%;
+  margin-top: 8px;
+}
+
+.lang-switch:hover {
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.9);
+  border-color: rgba(255,255,255,0.2);
+}
+
+.lang-switch-icon {
+  font-size: 16px;
+}

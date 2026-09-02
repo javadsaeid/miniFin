@@ -95,6 +95,12 @@ export const apiService = {
     api.get(`/audit/all-transactions?page=${page}&size=${size}`),
 
   getAllRoles: () => api.get("/roles"),
+
+  createRole: (body: { name: string }) => api.post("/roles", body),
+
+  updateRole: (body: { id: number; name: string }) => api.put("/roles", body),
+
+  deleteRole: (id: number) => api.delete(`/roles/${id}`),
 };
 
 export default api;

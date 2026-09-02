@@ -6,9 +6,11 @@ import Link from "next/link";
 import { Form, Input, Button, message } from "antd";
 import { LockOutlined, KeyOutlined, MailOutlined } from "@ant-design/icons";
 import { apiService } from "@/services/api";
+import { useTranslation } from "@/i18n/context";
 
 export default function ResetPasswordContent() {
   const router = useRouter();
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
 
   const onFinish = async (values: {
@@ -19,7 +21,7 @@ export default function ResetPasswordContent() {
     setLoading(true);
     try {
       await apiService.resetPassword(values);
-      message.success("Password reset successful");
+      message.success(t("auth.resetBtn"));
       router.push("/login");
     } catch (err: any) {
       message.error(err.response?.data?.message || "Reset failed");
@@ -30,41 +32,41 @@ export default function ResetPasswordContent() {
 
   return (
     <div className="auth-form-container">
-      <div className="auth-form-title">Set new password</div>
-      <div className="auth-form-subtitle">Enter the code from your email and your new password</div>
+      <div className="auth-form-title">{t("auth.setNewPassword")}</div>
+      <div className="auth-form-subtitle">{t("auth.resetFormSubtitle")}</div>
 
       <Form layout="vertical" onFinish={onFinish} size="large">
         <Form.Item
           name="email"
           rules={[
-            { required: true, message: "Email required" },
+            { required: true, message: t("auth.required") },
             { type: "email", message: "Invalid email" },
           ]}
         >
-          <Input prefix={<MailOutlined />} placeholder="Email address" />
+          <Input prefix={<MailOutlined />} placeholder={t("auth.email")} />
         </Form.Item>
         <Form.Item
           name="code"
-          rules={[{ required: true, message: "Reset code required" }]}
+          rules={[{ required: true, message: t("auth.required") }]}
         >
-          <Input prefix={<KeyOutlined />} placeholder="Reset code" />
+          <Input prefix={<KeyOutlined />} placeholder={t("auth.resetCode")} />
         </Form.Item>
         <Form.Item
           name="newPassword"
-          rules={[{ required: true, message: "New password required" }]}
+          rules={[{ required: true, message: t("auth.required") }]}
         >
-          <Input.Password prefix={<LockOutlined />} placeholder="New password" />
+          <Input.Password prefix={<LockOutlined />} placeholder={t("auth.newPassword")} />
         </Form.Item>
         <Form.Item style={{ marginBottom: 12 }}>
           <Button type="primary" htmlType="submit" block loading={loading} size="large">
-            Reset Password
+            {t("auth.resetBtn")}
           </Button>
         </Form.Item>
       </Form>
 
       <div style={{ textAlign: "center", fontSize: 13 }}>
         <Link href="/login" style={{ color: "#6366f1", fontWeight: 600 }}>
-          Back to login
+          {t("auth.backToLogin")}
         </Link>
       </div>
     </div>
