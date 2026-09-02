@@ -44,3 +44,5 @@ src/front-end-next/node_modules/
 
 ### E2E Test Screenshots ###
 screenshots/
+test-results/
+playwright-report/

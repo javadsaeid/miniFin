@@ -38,6 +38,8 @@ public class SecurityFilter {
                 )
                 .authorizeHttpRequests(
                         req -> req.requestMatchers("/api/auth/**").permitAll()
+                                .requestMatchers("/api/actuator/health/**", "/api/actuator/info").permitAll()
+                                .requestMatchers("/swagger-ui/**", "/api-docs/**", "/v3/api-docs/**").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(
